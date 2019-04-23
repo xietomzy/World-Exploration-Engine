@@ -3,18 +3,17 @@ package byow.Core;
 import byow.TileEngine.TERenderer;
 import byow.TileEngine.TETile;
 import byow.TileEngine.Tileset;
-import edu.princeton.cs.algs4.WeightedQuickUnionUF;
 
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.Random;
 
 public class RandomWorldGenerator {
-    private static final long SEED = 98467459;
+    private static final long SEED = 5;
     private static final Random R = new Random(SEED);
 
-    private static final int WIDTH = 100;
-    private static final int HEIGHT = 40;
+    private static final int WIDTH = 50;
+    private static final int HEIGHT = 30;
 
     private static class Position {
         private int x;
@@ -44,26 +43,59 @@ public class RandomWorldGenerator {
         for (int i = 0; i < numRooms; i++) {
             Room r;
             do {
-                int width = R.nextInt(15) + 1;
-                int height = R.nextInt(15) + 1;
-                int x = R.nextInt(WIDTH - width - 1);
-                int y = R.nextInt(HEIGHT - height - 1);
+                int width = R.nextInt(5) + 2;
+                int height = R.nextInt(5) + 2;
+                int x = R.nextInt(WIDTH - width - 3) + 1;
+                int y = R.nextInt(HEIGHT - height - 3) + 1;
                 Position p = new Position(x, y);
                 r = new Room(width, height, p);
             } while (checkOverlap(rooms, r));
             rooms.add(r);
         }
+        System.out.println(rooms.get(3).p.x);
+        System.out.println(rooms.get(3).p.y);
+        System.out.println(rooms.get(3).w);
+        System.out.println(rooms.get(3).h);
         return rooms;
     }
 
     public static boolean checkOverlap(ArrayList<Room> rooms, Room comp) {
         for (Room r : rooms) {
-            if (comp.p.y + comp.h > r.p.y && comp.p.y < r.p.y + r.h
-                    && comp.p.x + comp.w > r.p.x && comp.p.x < r.p.x + r.w) {
+            if ((comp.p.y + comp.h > r.p.y && comp.p.y < r.p.y + r.h)
+                    && (comp.p.x + comp.w > r.p.x && comp.p.x < r.p.x + r.w)) {
                 return true;
             }
         }
         return false;
+    }
+
+    public static void drawHallways(ArrayList<Room> rooms, TETile[][] world) {
+        for (int i = 0; i < rooms.size() - 1; i++) {
+            Room one = rooms.get(i);
+            Room two = rooms.get(i + 1);
+            int xDiff = two.p.x - one.p.x;
+            int yDiff = two.p.y - one.p.y;
+            if (xDiff > 0) {
+                for (int j = one.p.x; j < xDiff + one.p.x; j++) {
+                    world[j][one.p.y] = Tileset.FLOOR;
+                }
+            }
+            if (xDiff < 0) {
+                for (int j = one.p.x; j > xDiff + one.p.x; j--) {
+                    world[j][one.p.y] = Tileset.FLOOR;
+                }
+            }
+            if (yDiff > 0) {
+                for (int j = one.p.y; j < yDiff + one.p.y; j++) {
+                    world[one.p.x + xDiff][j] = Tileset.FLOOR;
+                }
+            }
+            if (yDiff < 0) {
+                for (int j = one.p.y; j > yDiff + one.p.y; j--) {
+                    world[one.p.x + xDiff][j] = Tileset.FLOOR;
+                }
+            }
+        }
     }
 
     public static void drawRoomAtLocation(Room r, TETile[][] world, TETile tile) {
@@ -73,10 +105,60 @@ public class RandomWorldGenerator {
         int h = r.h;
         for (int i = x; i < w + x; i += 1) {
             for (int j = y; j < h + y; j += 1) {
-                try {
-                    world[i][j] = tile;
-                } catch (IndexOutOfBoundsException e) {
-                    return;
+                //try {
+                world[i][j] = tile;
+                //} catch (IndexOutOfBoundsException e) {
+                //    return;
+                //}
+            }
+        }
+    }
+
+    //better way to do this....
+    //checks if you should put a wall; returns true if you should
+    public static boolean wallCheck(TETile[][] world, int x, int y) {
+        ArrayList<Integer> xDirections = new ArrayList<>();
+        ArrayList<Integer> yDirections = new ArrayList<>();
+        //up
+        int up = y + 1;
+        //down
+        int down = y - 1;
+        //right
+        int right = x + 1;
+        //left
+        int left = x - 1;
+
+        if (!(down < 0)) {
+            yDirections.add(down);
+        }
+        if (!(up > world[0].length)) {
+            yDirections.add(up);
+        }
+        if (!(left < 0)) {
+            xDirections.add(left);
+        }
+        if (!(right > world.length)) {
+            xDirections.add(right);
+        }
+        for (int side : xDirections) {
+            if (world[side][y].equals(Tileset.FLOOR)) {
+                return true;
+            }
+        }
+        for (int side : yDirections) {
+            if (world[x][side].equals(Tileset.FLOOR)) {
+                return true;
+            }
+        }
+        return false;
+    }
+    public static void drawWalls(TETile[][] world) {
+        for (int x = 0; x < WIDTH - 1; x += 1) {
+            for (int y = 0; y < HEIGHT - 1; y += 1) {
+                if (world[x][y].equals(Tileset.NOTHING)) {
+                    if (wallCheck(world, x, y)) {
+                        world[x][y] = Tileset.WALL;
+                    }
                 }
             }
         }
@@ -94,8 +176,12 @@ public class RandomWorldGenerator {
         }
         ArrayList<Room> rooms = genRooms(10);
         for (int i = 0; i < rooms.size(); i++) {
-            drawRoomAtLocation(rooms.get(i), world, new TETile((char) (i + 48), Color.blue, Color.white, "num"));
+            //TETile tile =  new TETile((char) (i + 48), Color.blue, Color.white, "num");
+            TETile tile = Tileset.FLOOR;
+            drawRoomAtLocation(rooms.get(i), world, tile);
         }
+        drawHallways(rooms, world);
+        drawWalls(world);
         ter.renderFrame(world);
     }
 }
