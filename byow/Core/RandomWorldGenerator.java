@@ -9,11 +9,11 @@ import java.util.ArrayList;
 import java.util.Random;
 
 public class RandomWorldGenerator {
-    private static final long SEED = 80;
+    private static final long SEED = 69420;
     private static final Random R = new Random(SEED);
 
-    private static final int WIDTH = 50;
-    private static final int HEIGHT = 30;
+    private static final int WIDTH = 80;
+    private static final int HEIGHT = 35;
 
     private static class Position {
         private int x;
@@ -182,7 +182,7 @@ public class RandomWorldGenerator {
                 world[x][y] = Tileset.NOTHING;
             }
         }
-        ArrayList<Room> rooms = genRooms(10);
+        ArrayList<Room> rooms = genRooms(20);
         for (int i = 0; i < rooms.size(); i++) {
             //TETile tile =  new TETile((char) (i + 48), Color.blue, Color.white, "num");
             TETile tile = Tileset.FLOOR;
