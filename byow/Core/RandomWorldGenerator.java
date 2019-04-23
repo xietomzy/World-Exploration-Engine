@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.Random;
 
 public class RandomWorldGenerator {
-    private static final long SEED = 69420;
+    private static final long SEED = 1337;
     private static final Random R = new Random(SEED);
 
     private static final int WIDTH = 80;
@@ -43,8 +43,8 @@ public class RandomWorldGenerator {
         for (int i = 0; i < numRooms; i++) {
             Room r;
             do {
-                int width = R.nextInt(7 - 2) + 2;
-                int height = R.nextInt(7 - 2) + 2;
+                int width = R.nextInt(7 - 2) + 1;
+                int height = R.nextInt(7 - 2) + 1;
                 int x = R.nextInt(WIDTH - width - 3) + 1;
                 int y = R.nextInt(HEIGHT - height - 3) + 1;
                 Position p = new Position(x, y);
@@ -61,8 +61,8 @@ public class RandomWorldGenerator {
 
     public static boolean checkOverlap(ArrayList<Room> rooms, Room comp) {
         for (Room r : rooms) {
-            if ((comp.p.y + comp.h > r.p.y && comp.p.y < r.p.y + r.h)
-                    && (comp.p.x + comp.w > r.p.x && comp.p.x < r.p.x + r.w)) {
+            if ((comp.p.y + comp.h > r.p.y - 1 && comp.p.y < r.p.y + r.h + 1)
+                    && (comp.p.x + comp.w > r.p.x - 1 && comp.p.x < r.p.x + r.w + 1)) {
                 return true;
             }
         }
@@ -77,22 +77,30 @@ public class RandomWorldGenerator {
             int yDiff = two.p.y - one.p.y;
             if (xDiff > 0) {
                 for (int j = one.p.x; j < xDiff + one.p.x; j++) {
-                    world[j][one.p.y] = Tileset.FLOOR;
+                    if (!world[j][one.p.y].description().equals("num")) {
+                        world[j][one.p.y] = Tileset.FLOOR;
+                    }
                 }
             }
             if (xDiff < 0) {
                 for (int j = one.p.x; j > xDiff + one.p.x; j--) {
-                    world[j][one.p.y] = Tileset.FLOOR;
+                    if (!world[j][one.p.y].description().equals("num")) {
+                        world[j][one.p.y] = Tileset.FLOOR;
+                    }
                 }
             }
             if (yDiff > 0) {
                 for (int j = one.p.y; j < yDiff + one.p.y; j++) {
-                    world[one.p.x + xDiff][j] = Tileset.FLOOR;
+                    if (!world[one.p.x + xDiff][j].description().equals("num")) {
+                        world[one.p.x + xDiff][j] = Tileset.FLOOR;
+                    }
                 }
             }
             if (yDiff < 0) {
                 for (int j = one.p.y; j > yDiff + one.p.y; j--) {
-                    world[one.p.x + xDiff][j] = Tileset.FLOOR;
+                    if (!world[one.p.x + xDiff][j].description().equals("num")) {
+                        world[one.p.x + xDiff][j] = Tileset.FLOOR;
+                    }
                 }
             }
         }
@@ -141,19 +149,19 @@ public class RandomWorldGenerator {
             xDirections.add(right);
         }
         for (int side : xDirections) {
-            if (world[side][y].equals(Tileset.FLOOR)) {
+            if (world[side][y].description().equals("num") || world[side][y].equals(Tileset.FLOOR)) {
                 return true;
             }
         }
         for (int side : yDirections) {
-            if (world[x][side].equals(Tileset.FLOOR)) {
+            if (world[x][side].description().equals("num") || world[x][side].equals(Tileset.FLOOR)) {
                 return true;
             }
         }
         //checks corners
         for (int xSide : xDirections) {
             for (int ySide : yDirections) {
-                if (world[xSide][ySide].equals(Tileset.FLOOR)) {
+                if (world[xSide][ySide].description().equals("num") || world[xSide][ySide].equals(Tileset.FLOOR)) {
                     return true;
                 }
             }
@@ -182,10 +190,10 @@ public class RandomWorldGenerator {
                 world[x][y] = Tileset.NOTHING;
             }
         }
-        ArrayList<Room> rooms = genRooms(20);
+        ArrayList<Room> rooms = genRooms(10);
         for (int i = 0; i < rooms.size(); i++) {
-            //TETile tile =  new TETile((char) (i + 48), Color.blue, Color.white, "num");
-            TETile tile = Tileset.FLOOR;
+            TETile tile =  new TETile((char) (i + 48), Color.blue, Color.white, "num");
+            //TETile tile = Tileset.FLOOR;
             drawRoomAtLocation(rooms.get(i), world, tile);
         }
         drawHallways(rooms, world);

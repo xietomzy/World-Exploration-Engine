@@ -35,6 +35,7 @@ public class BoringWorldDemo {
 
         HexWorld.addHexagon(world, new HexWorld.Position(20, 20), 6, Tileset.FLOWER);
         HexWorld.addHexagon(world, new HexWorld.Position(31, 26), 6, Tileset.MOUNTAIN);
+        HexWorld.addHexagon(world, new HexWorld.Position(31, 14), 6, Tileset.LINE_INTEGRAL);
 
         // draws the world to the screen
         ter.renderFrame(world);
