@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.Random;
 
 public class RandomWorldGenerator {
-    private static final long SEED = 5;
+    private static final long SEED = 80;
     private static final Random R = new Random(SEED);
 
     private static final int WIDTH = 50;
@@ -43,8 +43,8 @@ public class RandomWorldGenerator {
         for (int i = 0; i < numRooms; i++) {
             Room r;
             do {
-                int width = R.nextInt(5) + 2;
-                int height = R.nextInt(5) + 2;
+                int width = R.nextInt(7 - 2) + 2;
+                int height = R.nextInt(7 - 2) + 2;
                 int x = R.nextInt(WIDTH - width - 3) + 1;
                 int y = R.nextInt(HEIGHT - height - 3) + 1;
                 Position p = new Position(x, y);
@@ -148,6 +148,14 @@ public class RandomWorldGenerator {
         for (int side : yDirections) {
             if (world[x][side].equals(Tileset.FLOOR)) {
                 return true;
+            }
+        }
+        //checks corners
+        for (int xSide : xDirections) {
+            for (int ySide : yDirections) {
+                if (world[xSide][ySide].equals(Tileset.FLOOR)) {
+                    return true;
+                }
             }
         }
         return false;
