@@ -1,7 +1,13 @@
 package byow.Core;
 
+import byow.InputDemo.StringInputDevice;
 import byow.TileEngine.TERenderer;
 import byow.TileEngine.TETile;
+import byow.TileEngine.Tileset;
+
+import java.awt.*;
+import java.util.ArrayList;
+import java.util.Random;
 
 public class Engine {
     TERenderer ter = new TERenderer();
@@ -46,7 +52,42 @@ public class Engine {
         // See proj3.byow.InputDemo for a demo of how you can make a nice clean interface
         // that works for many different input types.
 
-        TETile[][] finalWorldFrame = null;
-        return finalWorldFrame;
+        //TERenderer ter = new TERenderer();
+        //ter.initialize(WIDTH, HEIGHT);
+        StringInputDevice s = new StringInputDevice(input);
+        char first = s.getNextKey();
+        if (first != 'n' && first != 'N') {
+            return null;
+        }
+        long seed = 0;
+        while (s.possibleNextInput()) {
+            char next = s.getNextKey();
+            if (Character.isDigit(next)) {
+                seed *= 10;
+                seed += next - 48;
+            } else {
+                break;
+            }
+        }
+
+        Random R = new Random(seed);
+        TETile[][] world = new TETile[WIDTH][HEIGHT];
+        for (int x = 0; x < WIDTH; x += 1) {
+            for (int y = 0; y < HEIGHT; y += 1) {
+                world[x][y] = Tileset.NOTHING;
+            }
+        }
+        ArrayList<RandomWorldGenerator.Room> rooms = RandomWorldGenerator.genRooms(R.nextInt(11) + 10, R, WIDTH, HEIGHT);
+        for (int i = 0; i < rooms.size(); i++) {
+            TETile tile =  new TETile((char) (i + 48), Color.blue, Color.white, "num");
+            //TETile tile = Tileset.FLOOR;
+            RandomWorldGenerator.drawRoomAtLocation(rooms.get(i), world, tile);
+        }
+        RandomWorldGenerator.drawHallways(rooms, world);
+        RandomWorldGenerator.drawWalls(world);
+        //ter.renderFrame(world);
+
+
+        return world;
     }
 }

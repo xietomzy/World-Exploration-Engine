@@ -9,13 +9,13 @@ import java.util.ArrayList;
 import java.util.Random;
 
 public class RandomWorldGenerator {
-    private static final long SEED = 1337;
-    private static final Random R = new Random(SEED);
+    //private static final long SEED = 1234567890;
+    //private static final Random R = new Random(SEED);
 
-    private static final int WIDTH = 80;
-    private static final int HEIGHT = 35;
+    //private static final int WIDTH = 80;
+    //private static final int HEIGHT = 35;
 
-    private static class Position {
+    public static class Position {
         private int x;
         private int y;
 
@@ -25,7 +25,7 @@ public class RandomWorldGenerator {
         }
     }
 
-    private static class Room {
+    public static class Room {
         private int w;
         private int h;
         // Bottom Left Coordinate of Room
@@ -38,13 +38,13 @@ public class RandomWorldGenerator {
         }
     }
 
-    public static ArrayList<Room> genRooms(int numRooms) {
+    public static ArrayList<Room> genRooms(int numRooms, Random R, int WIDTH, int HEIGHT) {
         ArrayList<Room> rooms = new ArrayList<>();
         for (int i = 0; i < numRooms; i++) {
             Room r;
             do {
-                int width = R.nextInt(7 - 2) + 1;
-                int height = R.nextInt(7 - 2) + 1;
+                int width = R.nextInt(15 - 2) + 1;
+                int height = R.nextInt(15 - 2) + 1;
                 int x = R.nextInt(WIDTH - width - 3) + 1;
                 int y = R.nextInt(HEIGHT - height - 3) + 1;
                 Position p = new Position(x, y);
@@ -169,8 +169,8 @@ public class RandomWorldGenerator {
         return false;
     }
     public static void drawWalls(TETile[][] world) {
-        for (int x = 0; x < WIDTH - 1; x += 1) {
-            for (int y = 0; y < HEIGHT - 1; y += 1) {
+        for (int x = 0; x < world.length - 1; x += 1) {
+            for (int y = 0; y < world[0].length - 1; y += 1) {
                 if (world[x][y].equals(Tileset.NOTHING)) {
                     if (wallCheck(world, x, y)) {
                         world[x][y] = Tileset.WALL;
@@ -180,6 +180,7 @@ public class RandomWorldGenerator {
         }
     }
 
+    /*
     public static void main(String[] args) {
         TERenderer ter = new TERenderer();
         ter.initialize(WIDTH, HEIGHT);
@@ -190,7 +191,7 @@ public class RandomWorldGenerator {
                 world[x][y] = Tileset.NOTHING;
             }
         }
-        ArrayList<Room> rooms = genRooms(10);
+        ArrayList<Room> rooms = genRooms(R.nextInt(11) + 10);
         for (int i = 0; i < rooms.size(); i++) {
             TETile tile =  new TETile((char) (i + 48), Color.blue, Color.white, "num");
             //TETile tile = Tileset.FLOOR;
@@ -200,4 +201,5 @@ public class RandomWorldGenerator {
         drawWalls(world);
         ter.renderFrame(world);
     }
+    */
 }
