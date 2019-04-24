@@ -48,7 +48,7 @@ public class RandomWorldGenerator {
                 int x = R.nextInt(width - w - 3) + 1;
                 int y = R.nextInt(height - h - 3) + 1;
                 Position p = new Position(x, y);
-                r = new Room(width, height, p);
+                r = new Room(w, h, p);
             } while (checkOverlap(rooms, r));
             rooms.add(r);
         }
