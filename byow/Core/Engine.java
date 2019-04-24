@@ -5,7 +5,7 @@ import byow.TileEngine.TERenderer;
 import byow.TileEngine.TETile;
 import byow.TileEngine.Tileset;
 
-import java.awt.*;
+import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -44,7 +44,6 @@ public class Engine {
      * @return the 2D TETile[][] representing the state of the world
      */
     public TETile[][] interactWithInputString(String input) {
-        // TODO: Fill out this method so that it run the engine using the input
         // passed in as an argument, and return a 2D tile representation of the
         // world that would have been drawn if the same inputs had been given
         // to interactWithKeyboard().
@@ -77,7 +76,8 @@ public class Engine {
                 world[x][y] = Tileset.NOTHING;
             }
         }
-        ArrayList<RandomWorldGenerator.Room> rooms = RandomWorldGenerator.genRooms(R.nextInt(11) + 10, R, WIDTH, HEIGHT);
+        ArrayList<RandomWorldGenerator.Room> rooms = RandomWorldGenerator.genRooms(R.nextInt(11)
+                + 10, R, WIDTH, HEIGHT);
         for (int i = 0; i < rooms.size(); i++) {
             TETile tile =  new TETile((char) (i + 48), Color.blue, Color.white, "num");
             //TETile tile = Tileset.FLOOR;

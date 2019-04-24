@@ -1,10 +1,10 @@
 package byow.Core;
 
-import byow.TileEngine.TERenderer;
+//import byow.TileEngine.TERenderer;
 import byow.TileEngine.TETile;
 import byow.TileEngine.Tileset;
 
-import java.awt.*;
+//import java.awt.*;
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -38,15 +38,15 @@ public class RandomWorldGenerator {
         }
     }
 
-    public static ArrayList<Room> genRooms(int numRooms, Random R, int WIDTH, int HEIGHT) {
+    public static ArrayList<Room> genRooms(int numRooms, Random R, int width, int height) {
         ArrayList<Room> rooms = new ArrayList<>();
         for (int i = 0; i < numRooms; i++) {
             Room r;
             do {
-                int width = R.nextInt(15 - 2) + 1;
-                int height = R.nextInt(15 - 2) + 1;
-                int x = R.nextInt(WIDTH - width - 3) + 1;
-                int y = R.nextInt(HEIGHT - height - 3) + 1;
+                int w = R.nextInt(15 - 2) + 1;
+                int h = R.nextInt(15 - 2) + 1;
+                int x = R.nextInt(width - w - 3) + 1;
+                int y = R.nextInt(height - h - 3) + 1;
                 Position p = new Position(x, y);
                 r = new Room(width, height, p);
             } while (checkOverlap(rooms, r));
@@ -149,19 +149,22 @@ public class RandomWorldGenerator {
             xDirections.add(right);
         }
         for (int side : xDirections) {
-            if (world[side][y].description().equals("num") || world[side][y].equals(Tileset.FLOOR)) {
+            if (world[side][y].description().equals("num")
+                    || world[side][y].equals(Tileset.FLOOR)) {
                 return true;
             }
         }
         for (int side : yDirections) {
-            if (world[x][side].description().equals("num") || world[x][side].equals(Tileset.FLOOR)) {
+            if (world[x][side].description().equals("num")
+                    || world[x][side].equals(Tileset.FLOOR)) {
                 return true;
             }
         }
         //checks corners
         for (int xSide : xDirections) {
             for (int ySide : yDirections) {
-                if (world[xSide][ySide].description().equals("num") || world[xSide][ySide].equals(Tileset.FLOOR)) {
+                if (world[xSide][ySide].description().equals("num")
+                        || world[xSide][ySide].equals(Tileset.FLOOR)) {
                     return true;
                 }
             }
