@@ -43,12 +43,12 @@ public class RandomWorldGenerator {
         for (int i = 0; i < numRooms; i++) {
             Room r;
             do {
-                int w = R.nextInt(15 - 2) + 1;
-                int h = R.nextInt(15 - 2) + 1;
-                int x = R.nextInt(width - w - 3) + 1;
-                int y = R.nextInt(height - h - 3) + 1;
+                int wi = R.nextInt(15 - 2) + 1;
+                int he = R.nextInt(15 - 2) + 1;
+                int x = R.nextInt(width - wi - 3) + 1;
+                int y = R.nextInt(height - he - 3) + 1;
                 Position p = new Position(x, y);
-                r = new Room(w, h, p);
+                r = new Room(wi, he, p);
             } while (checkOverlap(rooms, r));
             rooms.add(r);
         }

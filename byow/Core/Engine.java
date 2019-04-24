@@ -68,7 +68,7 @@ public class Engine {
                 break;
             }
         }
-
+        System.out.println(seed);
         Random R = new Random(seed);
         TETile[][] world = new TETile[WIDTH][HEIGHT];
         for (int x = 0; x < WIDTH; x += 1) {
