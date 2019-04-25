@@ -52,7 +52,7 @@ public class Engine {
         // that works for many different input types.
 
         //TERenderer ter = new TERenderer();
-        //ter.initialize(WIDTH, HEIGHT);
+        ter.initialize(WIDTH, HEIGHT);
         StringInputDevice s = new StringInputDevice(input);
         char first = s.getNextKey();
         if (first != 'n' && first != 'N') {
@@ -83,9 +83,9 @@ public class Engine {
             //TETile tile = Tileset.FLOOR;
             RandomWorldGenerator.drawRoomAtLocation(rooms.get(i), world, tile);
         }
-        RandomWorldGenerator.drawHallways(rooms, world);
+        RandomWorldGenerator.drawHallwaysNew(rooms, world, R);
         RandomWorldGenerator.drawWalls(world);
-        //ter.renderFrame(world);
+        ter.renderFrame(world);
 
 
         return world;

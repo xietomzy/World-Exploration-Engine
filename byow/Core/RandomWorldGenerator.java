@@ -6,6 +6,7 @@ import byow.TileEngine.Tileset;
 
 //import java.awt.*;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Random;
 
 public class RandomWorldGenerator {
@@ -25,6 +26,10 @@ public class RandomWorldGenerator {
             w = width;
             h = height;
             p = pos;
+        }
+
+        double distance(Room other) {
+            return Position.distance(this.p, other.p);
         }
     }
 
@@ -86,7 +91,26 @@ public class RandomWorldGenerator {
         }
     }
 
-    public static void drawHallways(ArrayList<Room> rooms, TETile[][] world) {
+    public static void drawHallwaysNew(ArrayList<Room> rooms, TETile[][] world, Random R) {
+        ArrayList<Room> closestRooms = new ArrayList<>();
+        HashSet<Room> roomsConnected = new HashSet<>();
+        for (Room r : rooms) {
+            Room closest = null;
+            for (Room comp : rooms) {
+                if (closest == null || (comp.distance(r) < closest.distance(r) && comp.distance(r) > 0)) {
+                    closest = comp;
+                }
+            }
+            closestRooms.add(closest);
+            roomsConnected.add(closest);
+        }
+
+        for (int i = 0; i < closestRooms.size(); i++) {
+            drawHallway(world, pickRandomEdgePoint(rooms.get(i), R), pickRandomEdgePoint(closestRooms.get(i), R), R);
+        }
+    }
+
+    public static void drawHallwaysOld(ArrayList<Room> rooms, TETile[][] world) {
         for (int i = 0; i < rooms.size() - 1; i++) {
             Room one = rooms.get(i);
             Room two = rooms.get(i + 1);
