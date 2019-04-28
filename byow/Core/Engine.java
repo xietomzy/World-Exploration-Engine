@@ -53,7 +53,7 @@ public class Engine {
 
         //TERenderer ter = new TERenderer();
         ter.initialize(WIDTH, HEIGHT);
-        StringInputDevice s = new StringInputDevice(input);
+        StringInputDevice s = new StringInputDevice("n69420s");
         char first = s.getNextKey();
         if (first != 'n' && first != 'N') {
             return null;
@@ -76,14 +76,14 @@ public class Engine {
                 world[x][y] = Tileset.NOTHING;
             }
         }
-        ArrayList<RandomWorldGenerator.Room> rooms = RandomWorldGenerator.genRooms(R.nextInt(11)
-                + 10, R, WIDTH, HEIGHT);
+        ArrayList<RandomWorldGenerator.Room> rooms = RandomWorldGenerator.genRooms(R.nextInt(16)
+                + 20, R, WIDTH, HEIGHT);
+        RandomWorldGenerator.drawHallwaysNew(rooms, world, R);
         for (int i = 0; i < rooms.size(); i++) {
             TETile tile =  new TETile((char) (i + 48), Color.blue, Color.white, "num");
             //TETile tile = Tileset.FLOOR;
             RandomWorldGenerator.drawRoomAtLocation(rooms.get(i), world, tile);
         }
-        RandomWorldGenerator.drawHallwaysNew(rooms, world, R);
         RandomWorldGenerator.drawWalls(world);
         ter.renderFrame(world);
 

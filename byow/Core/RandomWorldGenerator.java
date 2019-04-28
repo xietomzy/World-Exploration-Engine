@@ -3,11 +3,10 @@ package byow.Core;
 //import byow.TileEngine.TERenderer;
 import byow.TileEngine.TETile;
 import byow.TileEngine.Tileset;
+import edu.princeton.cs.algs4.WeightedQuickUnionUF;
 
 //import java.awt.*;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Random;
+import java.util.*;
 
 public class RandomWorldGenerator {
     //private static final long SEED = 1234567890;
@@ -16,11 +15,12 @@ public class RandomWorldGenerator {
     //private static final int WIDTH = 80;
     //private static final int HEIGHT = 35;
 
-    public static class Room {
+    public static class Room implements Comparable<Room>{
         private int w;
         private int h;
         // Bottom Left Coordinate of Room
         private Position p;
+        private static Room toComp;
 
         Room(int width, int height, Position pos) {
             w = width;
@@ -31,6 +31,16 @@ public class RandomWorldGenerator {
         double distance(Room other) {
             return Position.distance(this.p, other.p);
         }
+
+        @Override
+        public int compareTo(Room other) {
+            return toComp != null ? (int) (this.distance(toComp) - other.distance(toComp)) : 0;
+        }
+
+        @Override
+        public boolean equals(Object other) {
+            return this.p.equals(((Room) other).p);
+        }
     }
 
     public static ArrayList<Room> genRooms(int numRooms, Random R, int width, int height) {
@@ -38,8 +48,8 @@ public class RandomWorldGenerator {
         for (int i = 0; i < numRooms; i++) {
             Room r;
             do {
-                int wi = R.nextInt(15 - 2) + 1;
-                int he = R.nextInt(15 - 2) + 1;
+                int wi = R.nextInt(7 - 2) + 1;
+                int he = R.nextInt(7 - 2) + 1;
                 int x = R.nextInt(width - wi - 3) + 1;
                 int y = R.nextInt(height - he - 3) + 1;
                 Position p = new Position(x, y);
@@ -91,22 +101,26 @@ public class RandomWorldGenerator {
         }
     }
 
-    public static void drawHallwaysNew(ArrayList<Room> rooms, TETile[][] world, Random R) {
-        ArrayList<Room> closestRooms = new ArrayList<>();
-        HashSet<Room> roomsConnected = new HashSet<>();
-        for (Room r : rooms) {
-            Room closest = null;
-            for (Room comp : rooms) {
-                if (closest == null || (comp.distance(r) < closest.distance(r) && comp.distance(r) > 0)) {
-                    closest = comp;
-                }
-            }
-            closestRooms.add(closest);
-            roomsConnected.add(closest);
+    public static void drawHallwaysNew(ArrayList<Room> rooms, TETile[][] world, Random R) { //Here there could be a lot of optimization but whatever
+        WeightedQuickUnionUF hallConnections = new WeightedQuickUnionUF(rooms.size());
+        HashMap<Room, Integer> room2index = new HashMap<>();
+        for (int i = 0; i < rooms.size(); i++) {
+            room2index.put(rooms.get(i), i);
         }
 
-        for (int i = 0; i < closestRooms.size(); i++) {
-            drawHallway(world, pickRandomEdgePoint(rooms.get(i), R), pickRandomEdgePoint(closestRooms.get(i), R), R);
+        for (Room r : rooms) {
+            Room.toComp = r;
+            ArrayList<Room> closestRooms = (ArrayList<Room>) rooms.clone(); //O(N)
+            Collections.sort(closestRooms); //O(NlogN)
+            closestRooms.remove(0); //O(N)
+            for (Room comp : closestRooms) {
+                if (!hallConnections.connected(room2index.get(r), room2index.get(comp))) {
+                    drawHallway(world, pickRandomEdgePoint(r, R), pickRandomEdgePoint(comp, R), R);
+                    hallConnections.union(room2index.get(r), room2index.get(comp));
+                    //System.out.println(room2index.get(r) + "-->" + room2index.get(comp));
+                    break;
+                }
+            }
         }
     }
 
