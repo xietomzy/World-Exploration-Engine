@@ -59,6 +59,14 @@ public class RandomWorldGenerator {
         }
     }
 
+    public static Position pickRandomRoomPoint(Room r, Random R) {
+        int x = r.p.getX();
+        int y = r.p.getY();
+        int width = r.w;
+        int height = r.h;
+        return new Position(R.nextInt(width) + x, R.nextInt(height) + y);
+    }
+
     public static void drawHallway(TETile[][] world, Position a, Position b, Random R) {
         int xDiff = a.getX() - b.getX();
         int yDiff = a.getY()  - b.getY();
