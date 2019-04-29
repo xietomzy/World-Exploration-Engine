@@ -1,9 +1,12 @@
 package byow.Core;
 
+import byow.InputDemo.InputSource;
+import byow.InputDemo.KeyboardInputSource;
 import byow.InputDemo.StringInputDevice;
 import byow.TileEngine.TERenderer;
 import byow.TileEngine.TETile;
 import byow.TileEngine.Tileset;
+import edu.princeton.cs.introcs.StdDraw;
 
 import java.awt.Color;
 import java.util.ArrayList;
@@ -13,13 +16,25 @@ public class Engine {
     TERenderer ter = new TERenderer();
     /* Feel free to change the width and height. */
     public static final int WIDTH = 80;
-    public static final int HEIGHT = 30;
+    public static final int HEIGHT = 60;//30;
 
     /**
      * Method used for exploring a fresh world. This method should handle all inputs,
      * including inputs from the main menu.
      */
     public void interactWithKeyboard() {
+        KeyboardInputSource k = new KeyboardInputSource();
+        MainMenu m = new MainMenu(600, 600);
+        m.initialize();
+        char first = k.getNextKey();
+        if (first == 'N' || first == 'n') {
+            m.select();
+            long seed = getSeed(k);
+            m.showInput(seed + "");
+            StdDraw.pause(1500);
+            ter.initialize(WIDTH, HEIGHT);
+            ter.renderFrame(genWorld(seed));
+        }
     }
 
     /**
@@ -58,9 +73,19 @@ public class Engine {
         if (first != 'n' && first != 'N') {
             return null;
         }
+        long seed = getSeed(s);
+
+        TETile[][] world = genWorld(seed);
+        ter.renderFrame(world);
+
+
+        return world;
+    }
+
+    private long getSeed(InputSource inp) {
         long seed = 0;
-        while (s.possibleNextInput()) {
-            char next = s.getNextKey();
+        while (inp.possibleNextInput()) {
+            char next = inp.getNextKey();
             if (Character.isDigit(next)) {
                 seed *= 10;
                 seed += next - 48;
@@ -68,7 +93,10 @@ public class Engine {
                 break;
             }
         }
-        System.out.println(seed);
+        return seed;
+    }
+
+    private TETile[][] genWorld(long seed) {
         Random R = new Random(seed);
         TETile[][] world = new TETile[WIDTH][HEIGHT];
         for (int x = 0; x < WIDTH; x += 1) {
@@ -76,18 +104,15 @@ public class Engine {
                 world[x][y] = Tileset.NOTHING;
             }
         }
-        ArrayList<RandomWorldGenerator.Room> rooms = RandomWorldGenerator.genRooms(R.nextInt(16)
-                + 20, R, WIDTH, HEIGHT);
+        ArrayList<Room> rooms = RandomWorldGenerator.genRooms(R.nextInt(16)
+                + 30, R, WIDTH, HEIGHT);
         RandomWorldGenerator.drawHallwaysNew(rooms, world, R);
         for (int i = 0; i < rooms.size(); i++) {
-            TETile tile =  new TETile((char) (i + 48), Color.blue, Color.white, "num");
-            //TETile tile = Tileset.FLOOR;
+            //TETile tile =  new TETile((char) (i + 48), Color.blue, Color.white, "num");
+            TETile tile = Tileset.FLOOR;
             RandomWorldGenerator.drawRoomAtLocation(rooms.get(i), world, tile);
         }
         RandomWorldGenerator.drawWalls(world);
-        ter.renderFrame(world);
-
-
         return world;
     }
 }
