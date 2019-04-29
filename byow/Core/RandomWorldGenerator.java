@@ -15,34 +15,6 @@ public class RandomWorldGenerator {
     //private static final int WIDTH = 80;
     //private static final int HEIGHT = 35;
 
-    public static class Room implements Comparable<Room>{
-        private int w;
-        private int h;
-        // Bottom Left Coordinate of Room
-        private Position p;
-        private static Room toComp;
-
-        Room(int width, int height, Position pos) {
-            w = width;
-            h = height;
-            p = pos;
-        }
-
-        double distance(Room other) {
-            return Position.distance(this.p, other.p);
-        }
-
-        @Override
-        public int compareTo(Room other) {
-            return toComp != null ? (int) (this.distance(toComp) - other.distance(toComp)) : 0;
-        }
-
-        @Override
-        public boolean equals(Object other) {
-            return this.p.equals(((Room) other).p);
-        }
-    }
-
     public static ArrayList<Room> genRooms(int numRooms, Random R, int width, int height) {
         ArrayList<Room> rooms = new ArrayList<>();
         for (int i = 0; i < numRooms; i++) {
