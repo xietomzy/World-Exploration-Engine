@@ -61,6 +61,8 @@ public class Engine {
 
             ter.initialize(WIDTH, HEIGHT);
             ter.renderFrame(world);
+        } else if (first == 'Q' || first == 'q') {
+            System.exit(0);
         }
 
         char next = 'a';

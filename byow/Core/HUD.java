@@ -22,7 +22,7 @@ public class HUD {
 
         if (!(str == description)) {
             StdDraw.setPenColor(Color.BLACK);
-            StdDraw.filledRectangle(6, height - 1, 6, 2);
+            StdDraw.filledRectangle(6, height - 1, 6, 1);
             StdDraw.show();
 
             Font newFont = new Font("Monaco", Font.BOLD, 16);
