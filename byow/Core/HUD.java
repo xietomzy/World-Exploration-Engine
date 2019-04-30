@@ -7,7 +7,8 @@ import edu.princeton.cs.introcs.StdDraw;
 import java.awt.*;
 
 public class HUD {
-    public static void returnTile(TETile[][] world, int width, int height, TERenderer ter) {
+    public static String returnTile(TETile[][] world, int width, int height, TERenderer ter, String str) {
+        //StdDraw.clear();
         int x = (int) StdDraw.mouseX();
         int y = (int) StdDraw.mouseY();
         if (x == width) {
@@ -18,12 +19,22 @@ public class HUD {
         }
         //StdDraw.mouseEntered();
         String description = world[x][y].description();
-        Font newFont = new Font("Monaco", Font.BOLD, 16);
-        StdDraw.setFont(newFont);
-        StdDraw.setPenColor(new Color(255, 255, 255));
-        StdDraw.text(6, height - 1, description);
 
-        Font font = new Font("Monaco", Font.BOLD, 16 - 2);
-        StdDraw.setFont(font);
+        if (!(str == description)) {
+            StdDraw.setPenColor(Color.BLACK);
+            StdDraw.filledRectangle(6, height - 1, 6, 2);
+            StdDraw.show();
+
+            Font newFont = new Font("Monaco", Font.BOLD, 16);
+            StdDraw.setFont(newFont);
+            StdDraw.setPenColor(Color.WHITE);
+            StdDraw.text(6, height - 1, description);
+            StdDraw.show();
+            Font font = new Font("Monaco", Font.BOLD, 16 - 2);
+            StdDraw.setFont(font);
+            //ter.renderFrame(world);
+        }
+
+        return description;
     }
 }

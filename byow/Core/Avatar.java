@@ -2,6 +2,7 @@ package byow.Core;
 
 import byow.TileEngine.TETile;
 import byow.TileEngine.Tileset;
+import edu.princeton.cs.introcs.StdDraw;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -64,6 +65,7 @@ public class Avatar implements Serializable {
             world[x][y] = Tileset.FLOOR;
             pos = new Position (x, y - 1);
         }
+        StdDraw.show();
     }
 
 }

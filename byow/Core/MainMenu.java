@@ -6,8 +6,9 @@ import java.awt.Color;
 import java.awt.Font;
 
 public class MainMenu {
-    private int width;
-    private int height;
+    private double width;
+    private double height;
+    private final double offset = 0.05;
 
     public MainMenu(int w, int h) {
         width = w;
@@ -19,21 +20,21 @@ public class MainMenu {
      * @source TERenderer
      */
     public void initialize() {
-        StdDraw.setCanvasSize(width, height);
-        Font font = new Font("Monaco", Font.BOLD, 30);
-        StdDraw.setFont(font);
+        StdDraw.setCanvasSize((int) width * 600, (int) height * 600);
+
         StdDraw.setPenColor(new Color(255, 255, 255));
         StdDraw.setXscale(0, width);
         StdDraw.setYscale(0, height);
-
+        Font font = new Font("Monaco", Font.BOLD, 30);
+        StdDraw.setFont(font);
         StdDraw.clear(new Color(0, 0, 0));
 
         StdDraw.enableDoubleBuffering();
 
-        StdDraw.text(width / 2, height - 60, "Bruh Moment: The Game");
+        StdDraw.text(width / 2, height - offset * 2, "Bruh Moment: The Game");
         StdDraw.text(width / 2, height / 2, "Load Game (L)");
-        StdDraw.text(width / 2, height / 2 + 30, "New Game (N)");
-        StdDraw.text(width / 2, height / 2 - 30, "Quit (Q)");
+        StdDraw.text(width / 2, height / 2 + offset, "New Game (N)");
+        StdDraw.text(width / 2, height / 2 - offset, "Quit (Q)");
 
         StdDraw.show();
     }
@@ -41,7 +42,7 @@ public class MainMenu {
     public void select(char selection) {
         StdDraw.setPenColor(new Color(255, 0, 255));
         if (selection == 'N' || selection == 'n') {
-            StdDraw.text(width / 2, height / 2 + 30, "New Game (N)");
+            StdDraw.text(width / 2, height / 2 + offset, "New Game (N)");
         } else if (selection == 'L' || selection == 'l') {
             StdDraw.text(width / 2, height / 2, "Load Game (L)");
         }
@@ -50,7 +51,7 @@ public class MainMenu {
     }
 
     public void showInput(String input) {
-        StdDraw.text(width / 2, height / 2 + 80, input);
+        StdDraw.text(width / 2, height / 2 + offset * 2, input);
         StdDraw.show();
     }
 }

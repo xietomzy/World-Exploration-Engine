@@ -10,6 +10,7 @@ import byow.TileEngine.Tileset;
 import edu.princeton.cs.introcs.StdDraw;
 
 //import java.awt.Color;
+import java.awt.*;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.Random;
@@ -18,7 +19,7 @@ public class Engine {
     TERenderer ter = new TERenderer();
     /* Feel free to change the width and height. */
     public static final int WIDTH = 80;
-    public static final int HEIGHT = 60;//30;
+    public static final int HEIGHT = 30;//30;
     private Random R;
     private ArrayList<Room> rooms;
     private Avatar avatar;
@@ -31,7 +32,7 @@ public class Engine {
      */
     public void interactWithKeyboard() {
         KeyboardInputSource k = new KeyboardInputSource();
-        MainMenu m = new MainMenu(600, 600);
+        MainMenu m = new MainMenu(1, 1);
         m.initialize();
         char first = k.getNextKey();
         m.select(first);
@@ -62,11 +63,28 @@ public class Engine {
             ter.renderFrame(world);
         }
 
-        char next = k.getNextKey();
-        while (next != ':') {
-            moveAvatar(next);
-            next = k.getNextKey();
-        }
+        char next = 'a';
+        boolean hasNextKey = false;
+        String tileHover = "";
+        do {
+            hasNextKey = StdDraw.hasNextKeyTyped();
+            if (hasNextKey) {
+                next = Character.toUpperCase(StdDraw.nextKeyTyped());
+                moveAvatar(next);
+                //next = k.getNextKey();
+                ter.renderFrame(world);
+            }
+            tileHover = HUD.returnTile(world, WIDTH, HEIGHT, ter, tileHover);
+            /*Font newFont = new Font("Monaco", Font.BOLD, 16);
+            StdDraw.setFont(newFont);
+            StdDraw.setPenColor(Color.WHITE);
+            StdDraw.text(6, HEIGHT - 1, description);
+            StdDraw.show();
+            Font font = new Font("Monaco", Font.BOLD, 16 - 2);
+            StdDraw.setFont(font);*/
+
+
+        } while (!hasNextKey || next != ':');
 
 
         char last = k.getNextKey();
@@ -165,7 +183,6 @@ public class Engine {
         //char next = inp.getNextKey();
         //System.out.println(next);
         avatar.move(world, next);
-        ter.renderFrame(world);
         //}
         //}
     }
