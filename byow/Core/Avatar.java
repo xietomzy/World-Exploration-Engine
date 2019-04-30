@@ -3,10 +3,11 @@ package byow.Core;
 import byow.TileEngine.TETile;
 import byow.TileEngine.Tileset;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Random;
 
-public class Avatar {
+public class Avatar implements Serializable {
     private TETile ava;
     private Position pos;
     public Avatar(TETile avatar, TETile[][] world, Random R, ArrayList<Room> rooms) {

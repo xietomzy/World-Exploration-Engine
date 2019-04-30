@@ -3,12 +3,14 @@ package byow.Core;
 import byow.InputDemo.InputSource;
 import byow.InputDemo.KeyboardInputSource;
 import byow.InputDemo.StringInputDevice;
+//import byow.SaveDemo.Editor;
 import byow.TileEngine.TERenderer;
 import byow.TileEngine.TETile;
 import byow.TileEngine.Tileset;
 import edu.princeton.cs.introcs.StdDraw;
 
-import java.awt.Color;
+//import java.awt.Color;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -17,6 +19,11 @@ public class Engine {
     /* Feel free to change the width and height. */
     public static final int WIDTH = 80;
     public static final int HEIGHT = 60;//30;
+    private Random R;
+    private ArrayList<Room> rooms;
+    private Avatar avatar;
+    private CurrentState currentState;
+    private TETile[][] world;
 
     /**
      * Method used for exploring a fresh world. This method should handle all inputs,
@@ -27,13 +34,49 @@ public class Engine {
         MainMenu m = new MainMenu(600, 600);
         m.initialize();
         char first = k.getNextKey();
+        m.select(first);
         if (first == 'N' || first == 'n') {
-            m.select();
             long seed = getSeed(k);
+            Random R = new Random(seed);
+
             m.showInput(seed + "");
             StdDraw.pause(1500);
+
+            world = genWorld(R);
+            avatar = new Avatar(Tileset.AVATAR, world, R, rooms);
+
             ter.initialize(WIDTH, HEIGHT);
-            ter.renderFrame(genWorld(seed));
+            ter.renderFrame(world);
+
+            currentState = new CurrentState(world, R, seed, avatar);
+        } else if (first == 'L' || first == 'l') {
+            currentState = loadState();
+            world = currentState.world();
+            R = currentState.random();
+            avatar = currentState.avatar();
+
+            m.showInput("Loading world with seed " + currentState.seed() + "...");
+            StdDraw.pause(1500);
+
+            ter.initialize(WIDTH, HEIGHT);
+            ter.renderFrame(world);
+        }
+
+        char next = k.getNextKey();
+        while (next != ':') {
+            moveAvatar(next);
+            next = k.getNextKey();
+        }
+
+
+        char last = k.getNextKey();
+        if (last == 'q' || last == 'Q') {
+            currentState.setCurrentState(world);
+            saveWorld(currentState);
+            System.exit(0);
+        } else if (last == '!') {
+            //Quit without saving
+            System.exit(0);
         }
     }
 
@@ -67,16 +110,16 @@ public class Engine {
         // that works for many different input types.
 
         //TERenderer ter = new TERenderer();
-        ter.initialize(WIDTH, HEIGHT);
-        StringInputDevice s = new StringInputDevice("n69420s");
+        ter.initialize(WIDTH, HEIGHT); //REMEMBER TO COMMENT THIS OUT FOR AUTOGRADER
+        StringInputDevice s = new StringInputDevice(input);
         char first = s.getNextKey();
         if (first != 'n' && first != 'N') {
             return null;
         }
         long seed = getSeed(s);
-
-        TETile[][] world = genWorld(seed);
-        ter.renderFrame(world);
+        Random R = new Random(seed);
+        TETile[][] world = genWorld(R);
+        ter.renderFrame(world); //REMEMBER TO COMMENT THIS OUT FOR AUTOGRADER
 
 
         return world;
@@ -96,15 +139,14 @@ public class Engine {
         return seed;
     }
 
-    private TETile[][] genWorld(long seed) {
-        Random R = new Random(seed);
+    private TETile[][] genWorld(Random R) {
         TETile[][] world = new TETile[WIDTH][HEIGHT];
         for (int x = 0; x < WIDTH; x += 1) {
             for (int y = 0; y < HEIGHT; y += 1) {
                 world[x][y] = Tileset.NOTHING;
             }
         }
-        ArrayList<Room> rooms = RandomWorldGenerator.genRooms(R.nextInt(16)
+        rooms = RandomWorldGenerator.genRooms(R.nextInt(16)
                 + 30, R, WIDTH, HEIGHT);
         RandomWorldGenerator.drawHallwaysNew(rooms, world, R);
         for (int i = 0; i < rooms.size(); i++) {
@@ -114,5 +156,62 @@ public class Engine {
         }
         RandomWorldGenerator.drawWalls(world);
         return world;
+    }
+
+    private void moveAvatar(char next) {
+        //while (true) {
+        //System.out.println(HUD.returnTile());
+        //if (inp.possibleNextInput()) {
+        //char next = inp.getNextKey();
+        //System.out.println(next);
+        avatar.move(world, next);
+        ter.renderFrame(world);
+        //}
+        //}
+    }
+
+    /**
+     *
+     * @source SaveDemo
+     */
+    private void saveWorld(CurrentState currentState) {
+        File f = new File("./bruh_moment_save_data");
+        try {
+            if (!f.exists()) {
+                f.createNewFile();
+            }
+            FileOutputStream fs = new FileOutputStream(f);
+            ObjectOutputStream os = new ObjectOutputStream(fs);
+            os.writeObject(currentState);
+        }  catch (FileNotFoundException e) {
+            System.out.println("file not found");
+            System.exit(0);
+        } catch (IOException e) {
+            System.out.println(e);
+            System.exit(0);
+        }
+    }
+
+    private CurrentState loadState() {
+        File f = new File("./bruh_moment_save_data");
+        if (f.exists()) {
+            try {
+                FileInputStream fs = new FileInputStream(f);
+                ObjectInputStream os = new ObjectInputStream(fs);
+                return (CurrentState) os.readObject();
+            } catch (FileNotFoundException e) {
+                System.out.println("file not found");
+                System.exit(0);
+            } catch (IOException e) {
+                System.out.println(e);
+                System.exit(0);
+            } catch (ClassNotFoundException e) {
+                System.out.println("class not found");
+                System.exit(0);
+            }
+        }
+
+        /* In the case no CurrentState has been saved yet, we return a new one. */
+        return null;
     }
 }

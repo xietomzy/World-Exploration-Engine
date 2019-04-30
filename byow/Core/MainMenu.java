@@ -38,10 +38,13 @@ public class MainMenu {
         StdDraw.show();
     }
 
-    public void select() {
-        //StdDraw.clear(new Color(0, 0, 0));
+    public void select(char selection) {
         StdDraw.setPenColor(new Color(255, 0, 255));
-        StdDraw.text(width / 2, height / 2 + 30, "New Game (N)");
+        if (selection == 'N' || selection == 'n') {
+            StdDraw.text(width / 2, height / 2 + 30, "New Game (N)");
+        } else if (selection == 'L' || selection == 'l') {
+            StdDraw.text(width / 2, height / 2, "Load Game (L)");
+        }
         StdDraw.setPenColor(new Color(255, 255, 255));
         StdDraw.show();
     }
