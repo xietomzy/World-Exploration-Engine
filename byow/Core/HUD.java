@@ -7,7 +7,7 @@ import edu.princeton.cs.introcs.StdDraw;
 import java.awt.*;
 
 public class HUD {
-    public static String returnTile(TETile[][] world, int width, int height, TERenderer ter, String str) {
+    public static String returnTile(TETile[][] world, int width, int height, String str) {
         //StdDraw.clear();
         int x = (int) StdDraw.mouseX();
         int y = (int) StdDraw.mouseY();

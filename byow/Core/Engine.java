@@ -14,6 +14,7 @@ import java.awt.*;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.Random;
+import java.util.Set;
 
 public class Engine {
     TERenderer ter = new TERenderer();
@@ -25,79 +26,19 @@ public class Engine {
     private Avatar avatar;
     private CurrentState currentState;
     private TETile[][] world;
-
+    private int currentSave = 0;
+    private String name;
+    private Police police;
+    //be able to choose save file
+    //be able to delete save file
     /**
      * Method used for exploring a fresh world. This method should handle all inputs,
      * including inputs from the main menu.
      */
     public void interactWithKeyboard() {
         KeyboardInputSource k = new KeyboardInputSource();
-        MainMenu m = new MainMenu(1, 1);
-        m.initialize();
-        char first = k.getNextKey();
-        m.select(first);
-        if (first == 'N' || first == 'n') {
-            long seed = getSeed(k);
-            Random R = new Random(seed);
-
-            m.showInput(seed + "");
-            StdDraw.pause(1500);
-
-            world = genWorld(R);
-            avatar = new Avatar(Tileset.AVATAR, world, R, rooms);
-
-            ter.initialize(WIDTH, HEIGHT);
-            ter.renderFrame(world);
-
-            currentState = new CurrentState(world, R, seed, avatar);
-        } else if (first == 'L' || first == 'l') {
-            currentState = loadState();
-            world = currentState.world();
-            R = currentState.random();
-            avatar = currentState.avatar();
-
-            m.showInput("Loading world with seed " + currentState.seed() + "...");
-            StdDraw.pause(1500);
-
-            ter.initialize(WIDTH, HEIGHT);
-            ter.renderFrame(world);
-        } else if (first == 'Q' || first == 'q') {
-            System.exit(0);
-        }
-
-        char next = 'a';
-        boolean hasNextKey = false;
-        String tileHover = "";
-        do {
-            hasNextKey = StdDraw.hasNextKeyTyped();
-            if (hasNextKey) {
-                next = Character.toUpperCase(StdDraw.nextKeyTyped());
-                moveAvatar(next);
-                //next = k.getNextKey();
-                ter.renderFrame(world);
-            }
-            tileHover = HUD.returnTile(world, WIDTH, HEIGHT, ter, tileHover);
-            /*Font newFont = new Font("Monaco", Font.BOLD, 16);
-            StdDraw.setFont(newFont);
-            StdDraw.setPenColor(Color.WHITE);
-            StdDraw.text(6, HEIGHT - 1, description);
-            StdDraw.show();
-            Font font = new Font("Monaco", Font.BOLD, 16 - 2);
-            StdDraw.setFont(font);*/
-
-
-        } while (!hasNextKey || next != ':');
-
-
-        char last = k.getNextKey();
-        if (last == 'q' || last == 'Q') {
-            currentState.setCurrentState(world);
-            saveWorld(currentState);
-            System.exit(0);
-        } else if (last == '!') {
-            //Quit without saving
-            System.exit(0);
-        }
+        runGame(k);
+        System.exit(0);
     }
 
     /**
@@ -129,20 +70,137 @@ public class Engine {
         // See proj3.byow.InputDemo for a demo of how you can make a nice clean interface
         // that works for many different input types.
 
-        //TERenderer ter = new TERenderer();
-        ter.initialize(WIDTH, HEIGHT); //REMEMBER TO COMMENT THIS OUT FOR AUTOGRADER
         StringInputDevice s = new StringInputDevice(input);
-        char first = s.getNextKey();
-        if (first != 'n' && first != 'N') {
-            return null;
-        }
-        long seed = getSeed(s);
-        Random R = new Random(seed);
-        TETile[][] world = genWorld(R);
-        ter.renderFrame(world); //REMEMBER TO COMMENT THIS OUT FOR AUTOGRADER
-
+        runGame(s);
 
         return world;
+    }
+
+    private void startUp(InputSource inp) {
+        Set<Character> menuOptions = Set.of('N', 'n', 'L', 'l', 'S', 's', 'B', 'b', 'Q', 'q');
+
+        MainMenu m = new MainMenu(1, 1);
+        m.initialize();
+        m.drawMenu();
+
+        char first;// = inp.getNextKey();
+
+        boolean runAgain;
+        do {
+            runAgain = false;
+            m.drawMenu();
+            do {
+                first = inp.getNextKey();
+            } while (!menuOptions.contains(first));
+            m.select(first);
+            if (first == 'N' || first == 'n') {
+                long seed = getSeed(inp);
+                R = new Random(seed);
+
+                m.showInput(seed + "");
+                StdDraw.pause(1500);
+
+                world = genWorld(R);
+                avatar = new Avatar(Tileset.AVATAR, world, R, rooms);
+                police = new Police(world, R, rooms, avatar);
+                //if (inp instanceof KeyboardInputSource) {
+                ter.initialize(WIDTH, HEIGHT);
+                ter.renderFrame(world);
+                //}
+
+                currentState = new CurrentState(world, R, seed, avatar, name, police);
+            } else if (first == 'L' || first == 'l') {
+                currentState = loadState("./bruh_moment_save_data_1");
+                world = currentState.world();
+                R = currentState.random();
+                avatar = currentState.avatar();
+                police = currentState.police();
+                name = currentState.name();
+
+                m.showInput("Loading world with seed " + currentState.seed() + "...");
+                StdDraw.pause(1500);
+
+                //if (inp instanceof KeyboardInputSource) {
+                ter.initialize(WIDTH, HEIGHT);
+                ter.renderFrame(world);
+                //}
+            } else if (first == 'Q' || first == 'q') {
+                System.exit(0);
+            } else if (first == 'S' || first == 's') {
+                m.saveFiles();
+                char choice = inp.getNextKey();
+
+                if (choice == 'B' || choice == 'b') {
+                    runAgain = true;
+                } else {
+                    if (choice == '1') {
+                        currentSave = 1;
+                    } else if (choice == '2') {
+                        currentSave = 2;
+                    } else if (choice == '3') {
+                        currentSave = 3;
+                    }
+                    loadSave(currentSave);
+
+                    m.showInput("Loading save file " + currentSave + " with seed " + currentState.seed() + "...");
+                    StdDraw.pause(1500);
+
+                    ter.initialize(WIDTH, HEIGHT);
+                    ter.renderFrame(world);
+                }
+            } else if (first == 'B' || first == 'b') {
+                name = m.chooseName();
+                runAgain = true;
+            }
+        } while (runAgain);
+    }
+
+    private void runGame(InputSource inp) {
+        startUp(inp);
+        if (inp instanceof KeyboardInputSource) {
+            char next = 'a';
+            boolean hasNextKey;
+            //boolean nameShown;
+            String tileHover = "";
+            HUD.showName(WIDTH, HEIGHT, name);
+            do {
+                hasNextKey = StdDraw.hasNextKeyTyped();
+                if (hasNextKey) {
+                    next = Character.toUpperCase(StdDraw.nextKeyTyped());
+                    moveAvatar(next);
+                    //ter.renderFrame(world);
+                }
+                tileHover = HUD.returnTile(world, WIDTH, HEIGHT, tileHover);
+                police.move(world, R);
+            } while (!hasNextKey || next != ':');
+        } else if (inp instanceof StringInputDevice) {
+            while (inp.possibleNextInput()) {
+                char next = inp.getNextKey();
+                if (next == ':') {
+                    break;
+                }
+                moveAvatar(next);
+            }
+            ter.renderFrame(world);
+        }
+        try {
+            char last = inp.getNextKey();
+            if (last == 'q' || last == 'Q') {
+                currentState.setCurrentState(world);
+                saveWorld(currentState);
+            }
+        } catch (StringIndexOutOfBoundsException e) {
+            System.out.println("No more keys to digest");
+        }
+    }
+
+    private void loadSave(int saveNum) {
+        currentState = loadState("./bruh_moment_save_data_" + saveNum);
+        world = currentState.world();
+        R = currentState.random();
+        avatar = currentState.avatar();
+        police = currentState.police();
+        name = currentState.name();
     }
 
     private long getSeed(InputSource inp) {
@@ -179,14 +237,17 @@ public class Engine {
     }
 
     private void moveAvatar(char next) {
-        //while (true) {
-        //System.out.println(HUD.returnTile());
-        //if (inp.possibleNextInput()) {
-        //char next = inp.getNextKey();
-        //System.out.println(next);
         avatar.move(world, next);
-        //}
-        //}
+    }
+
+    private File firstOpenPath() {
+        for (int i = 1; i <= 3; i++) {
+            File f = new File("./bruh_moment_save_data_" + i);
+            if (!f.exists()) {
+                return f;
+            }
+        }
+        return new File("./bruh_moment_save_data_1");
     }
 
     /**
@@ -194,7 +255,12 @@ public class Engine {
      * @source SaveDemo
      */
     private void saveWorld(CurrentState currentState) {
-        File f = new File("./bruh_moment_save_data");
+        File f;
+        if (currentSave == 0) {
+            f = firstOpenPath();
+        } else {
+            f = new File("./bruh_moment_save_data_" + currentSave);
+        }
         try {
             if (!f.exists()) {
                 f.createNewFile();
@@ -211,8 +277,8 @@ public class Engine {
         }
     }
 
-    private CurrentState loadState() {
-        File f = new File("./bruh_moment_save_data");
+    private CurrentState loadState(String file) {
+        File f = new File(file);
         if (f.exists()) {
             try {
                 FileInputStream fs = new FileInputStream(f);
