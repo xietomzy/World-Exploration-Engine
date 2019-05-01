@@ -30,11 +30,26 @@ public class HUD {
             StdDraw.setPenColor(Color.WHITE);
             StdDraw.text(6, height - 1, description);
             StdDraw.show();
+
             Font font = new Font("Monaco", Font.BOLD, 16 - 2);
             StdDraw.setFont(font);
             //ter.renderFrame(world);
         }
 
         return description;
+    }
+
+    public static void showName(int width, int height, String name) {
+        if (name == "" || name == null) {
+            return;
+        }
+        Font newFont = new Font("Monaco", Font.BOLD, 16);
+        StdDraw.setFont(newFont);
+        StdDraw.setPenColor(Color.WHITE);
+        StdDraw.text(width / 2, height - 1, name + " the Thief");
+        StdDraw.show();
+
+        Font font = new Font("Monaco", Font.BOLD, 16 - 2);
+        StdDraw.setFont(font);
     }
 }

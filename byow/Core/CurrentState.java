@@ -10,12 +10,16 @@ public class CurrentState implements Serializable {
     private Random random;
     private long seed;
     private Avatar avatar;
+    private String name;
+    private Police police;
 
-    public CurrentState(TETile[][] curr, Random r, long s, Avatar a) {
+    public CurrentState(TETile[][] curr, Random r, long s, Avatar a, String n, Police p) {
         world = curr;
         random = r;
         seed = s;
         avatar = a;
+        name = n;
+        police = p;
     }
 
     public void setCurrentState(TETile [][] currWorld) {
@@ -37,4 +41,8 @@ public class CurrentState implements Serializable {
     public Avatar avatar() {
         return avatar;
     }
+
+    public String name() {return name;}
+
+    public Police police() {return police;}
 }

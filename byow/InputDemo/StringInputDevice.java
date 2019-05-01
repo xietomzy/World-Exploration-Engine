@@ -1,9 +1,11 @@
 package byow.InputDemo;
 
+import java.io.Serializable;
+
 /**
  * Created by hug.
  */
-public class StringInputDevice implements InputSource  {
+public class StringInputDevice implements InputSource, Serializable {
     private String input;
     private int index;
 
