@@ -35,6 +35,10 @@ public class Police implements Serializable{
         policeMover = new StringInputDevice("" + direction); // zeroes are meant for buffering movement
     }
 
+    public Position getPosition() {
+        return pos;
+    }
+
     public void move(TETile[][] world, Random R) {
         if (!policeMover.possibleNextInput()) {
             policeMover = new StringInputDevice("" + direction);
@@ -45,61 +49,105 @@ public class Police implements Serializable{
         int y = pos.getY();
         // left
         if (direction == 'a') {
-            if (world[x - 1][y].equals(Tileset.WALL) || checkAvatar(world, x - 1, y)) {
+            if (world[x - 1][y].equals(Tileset.WALL) || checkAvatarCollision(world, x - 1, y)) {
                 char[] differentDir = new char[] {'w', 's', 'd'};
                 direction = differentDir[R.nextInt(3)];
                 //System.out.println(direction);
                 return;
             }
             world[x - 1][y] = policeTile;
-            world[x - 1][y].draw(x - 1, y);
+            //world[x - 1][y].draw(x - 1, y);
             world[x][y] = Tileset.FLOOR;
-            world[x][y].draw(x, y);
+            //world[x][y].draw(x, y);
+            /*if (checkIfInAvatarSight(world, pos.getX(), pos.getY())) {
+                world[x - 1][y].draw(x - 1, y);
+                world[x][y].draw(x, y);
+            }*/
             pos = new Position (x - 1, y);
+
         }
         // up
         if (direction == 'w') {
-            if (world[x][y + 1].equals(Tileset.WALL) || checkAvatar(world, x, y + 1)) {
+            if (world[x][y + 1].equals(Tileset.WALL) || checkAvatarCollision(world, x, y + 1)) {
                 char[] differentDir = new char[] {'a', 's', 'd'};
                 direction = differentDir[R.nextInt(3)];
                 return;
             }
             world[x][y + 1] = policeTile;
-            world[x][y + 1].draw(x, y + 1);
+            //world[x][y + 1].draw(x, y + 1);
             world[x][y] = Tileset.FLOOR;
-            world[x][y].draw(x, y);
+            //world[x][y].draw(x, y);
+            /*if (checkIfInAvatarSight(world, pos.getX(), pos.getY())) {
+                world[x][y + 1].draw(x, y + 1);
+                world[x][y].draw(x, y);
+            }*/
             pos = new Position (x, y + 1);
+
         }
         // right
         if (direction == 'd') {
-            if (world[x + 1][y].equals(Tileset.WALL) || checkAvatar(world, x + 1, y)) {
+            if (world[x + 1][y].equals(Tileset.WALL) || checkAvatarCollision(world, x + 1, y)) {
                 char[] differentDir = new char[] {'w', 's', 'a'};
                 direction = differentDir[R.nextInt(3)];
                 return;
             }
             world[x + 1][y] = policeTile;
-            world[x + 1][y].draw(x + 1, y);
+            //world[x + 1][y].draw(x + 1, y);
             world[x][y] = Tileset.FLOOR;
-            world[x][y].draw(x, y);
+            //world[x][y].draw(x, y);
+            /*if (checkIfInAvatarSight(world, pos.getX(), pos.getY())) {
+                world[x + 1][y].draw(x + 1, y);
+                world[x][y].draw(x, y);
+            }*/
             pos = new Position (x + 1, y);
+
         }
         // down
         if (direction == 's') {
-            if (world[x][y - 1].equals(Tileset.WALL) || checkAvatar(world, x, y - 1)) {
+            if (world[x][y - 1].equals(Tileset.WALL) || checkAvatarCollision(world, x, y - 1)) {
                 char[] differentDir = new char[] {'w', 'a', 'd'};
                 direction = differentDir[R.nextInt(3)];
                 return;
             }
             world[x][y - 1] = policeTile;
-            world[x][y - 1].draw(x, y - 1);
+            //world[x][y - 1].draw(x, y - 1);
             world[x][y] = Tileset.FLOOR;
-            world[x][y].draw(x, y);
+            //world[x][y].draw(x, y);
+            /*if (checkIfInAvatarSight(world, pos.getX(), pos.getY())) {
+                world[x][y - 1].draw(x, y - 1);
+                world[x][y].draw(x, y);
+            }*/
             pos = new Position (x, y - 1);
+
         }
+        if (checkIfInAvatarSight(world, pos.getX(), pos.getY())) {
+            // draws police's new position
+            world[pos.getX()][pos.getY()].draw(pos.getX(), pos.getY());
+        }
+        if (checkIfInAvatarSight(world, x, y)) {
+            // erases police's previous position
+            world[x][y].draw(x, y);
+        }
+
         StdDraw.show();
     }
 
-    public boolean checkAvatar(TETile[][] world, int x, int y) {
+    public boolean checkAvatarCollision(TETile[][] world, int x, int y) {
         return world[x][y].equals(Tileset.AVATAR);
+    }
+
+    public boolean checkIfInAvatarSight(TETile[][] world, int x, int y) {
+        for (int i = x - 4; i <= x + 4; i++) {
+            for (int j = y - 4; j <= y + 4; j++) {
+                try {
+                    if (checkAvatarCollision(world, i, j)) {
+                        return true;
+                    }
+                } catch (Exception e){
+
+                }
+            }
+        }
+        return false;
     }
 }
