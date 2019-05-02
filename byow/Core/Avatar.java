@@ -4,7 +4,8 @@ import byow.TileEngine.TETile;
 import byow.TileEngine.Tileset;
 import edu.princeton.cs.introcs.StdDraw;
 
-import java.awt.*;
+//import java.awt.*;
+import java.awt.Color;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Random;
@@ -48,7 +49,7 @@ public class Avatar implements Serializable {
             world[x - 1][y].draw(x - 1, y);
             world[x][y] = Tileset.FLOOR;
             //world[x][y].draw(x, y);
-            pos = new Position (x - 1, y);
+            pos = new Position(x - 1, y);
             drawSquareLighting(world, pos.getX(), pos.getY());
         }
         // up
@@ -60,7 +61,7 @@ public class Avatar implements Serializable {
             world[x][y + 1].draw(x, y + 1);
             world[x][y] = Tileset.FLOOR;
             world[x][y].draw(x, y);
-            pos = new Position (x, y + 1);
+            pos = new Position(x, y + 1);
             drawSquareLighting(world, pos.getX(), pos.getY());
         }
         // right
@@ -72,7 +73,7 @@ public class Avatar implements Serializable {
             world[x + 1][y].draw(x + 1, y);
             world[x][y] = Tileset.FLOOR;
             world[x][y].draw(x, y);
-            pos = new Position (x + 1, y);
+            pos = new Position(x + 1, y);
             drawSquareLighting(world, pos.getX(), pos.getY());
         }
         // down
@@ -84,7 +85,7 @@ public class Avatar implements Serializable {
             world[x][y - 1].draw(x, y - 1);
             world[x][y] = Tileset.FLOOR;
             world[x][y].draw(x, y);
-            pos = new Position (x, y - 1);
+            pos = new Position(x, y - 1);
             drawSquareLighting(world, pos.getX(), pos.getY());
         }
         StdDraw.show();
@@ -102,7 +103,7 @@ public class Avatar implements Serializable {
             //world[x - 1][y].draw(x - 1, y);
             world[x][y] = Tileset.FLOOR;
             //world[x][y].draw(x, y);
-            pos = new Position (x - 1, y);
+            pos = new Position(x - 1, y);
             //drawSquareLighting(world, pos.getX(), pos.getY());
         }
         // up
@@ -114,7 +115,7 @@ public class Avatar implements Serializable {
             //world[x][y + 1].draw(x, y + 1);
             world[x][y] = Tileset.FLOOR;
             //world[x][y].draw(x, y);
-            pos = new Position (x, y + 1);
+            pos = new Position(x, y + 1);
             //drawSquareLighting(world, pos.getX(), pos.getY());
         }
         // right
@@ -126,7 +127,7 @@ public class Avatar implements Serializable {
             //world[x + 1][y].draw(x + 1, y);
             world[x][y] = Tileset.FLOOR;
             //world[x][y].draw(x, y);
-            pos = new Position (x + 1, y);
+            pos = new Position(x + 1, y);
             //drawSquareLighting(world, pos.getX(), pos.getY());
         }
         // down
@@ -138,7 +139,7 @@ public class Avatar implements Serializable {
             //world[x][y - 1].draw(x, y - 1);
             world[x][y] = Tileset.FLOOR;
             //world[x][y].draw(x, y);
-            pos = new Position (x, y - 1);
+            pos = new Position(x, y - 1);
             //drawSquareLighting(world, pos.getX(), pos.getY());
         }
         //StdDraw.show();
@@ -152,7 +153,8 @@ public class Avatar implements Serializable {
             for (int j = y - 4; j <= y + 4; j++) {
                 try {
                     world[i][j].draw(i, j);
-                } catch (Exception e) {
+                } catch (ArrayIndexOutOfBoundsException e) {
+                    //continue
                 }
             }
         }

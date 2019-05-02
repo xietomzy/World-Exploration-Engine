@@ -3,11 +3,11 @@ package byow.Core;
 import java.io.Serializable;
 
 public class Room implements Comparable<Room>, Serializable {
-    public int w;
-    public int h;
+    private int w;
+    private int h;
     // Bottom Left Coordinate of Room
-    public Position p;
-    public static Room toComp;
+    private Position p;
+    private static Room toComp;
 
     Room(int width, int height, Position pos) {
         w = width;
@@ -27,5 +27,26 @@ public class Room implements Comparable<Room>, Serializable {
     @Override
     public boolean equals(Object other) {
         return this.p.equals(((Room) other).p);
+    }
+
+    @Override
+    public int hashCode() {
+        return p.hashCode();
+    }
+
+    public int w() {
+        return w;
+    }
+
+    public int h() {
+        return h;
+    }
+
+    public Position p() {
+        return p;
+    }
+
+    public static void setToComp(Room c) {
+        toComp = c;
     }
 }

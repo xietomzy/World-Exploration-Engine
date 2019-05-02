@@ -1,10 +1,12 @@
 package byow.Core;
 
-import byow.TileEngine.TERenderer;
+//import byow.TileEngine.TERenderer;
 import byow.TileEngine.TETile;
 import edu.princeton.cs.introcs.StdDraw;
 
-import java.awt.*;
+//import java.awt.*;
+import java.awt.Font;
+import java.awt.Color;
 
 public class HUD {
     public static String returnTile(TETile[][] world, int width, int height, String str) {
@@ -40,7 +42,7 @@ public class HUD {
     }
 
     public static void showName(int width, int height, String name) {
-        if (name == "" || name == null) {
+        if (name == null || name.equals("")) {
             return;
         }
         Font newFont = new Font("Monaco", Font.BOLD, 16);

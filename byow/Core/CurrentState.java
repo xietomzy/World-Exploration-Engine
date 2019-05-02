@@ -42,7 +42,11 @@ public class CurrentState implements Serializable {
         return avatar;
     }
 
-    public String name() {return name;}
+    public String name() {
+        return name;
+    }
 
-    public Police police() {return police;}
+    public Police police() {
+        return police;
+    }
 }

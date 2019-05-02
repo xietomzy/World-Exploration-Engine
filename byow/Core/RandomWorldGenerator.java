@@ -6,7 +6,11 @@ import byow.TileEngine.Tileset;
 import edu.princeton.cs.algs4.WeightedQuickUnionUF;
 
 //import java.awt.*;
-import java.util.*;
+//import java.util.*;
+import java.util.ArrayList;
+import java.util.Random;
+import java.util.HashMap;
+import java.util.Collections;
 
 public class RandomWorldGenerator {
     //private static final long SEED = 1234567890;
@@ -34,8 +38,9 @@ public class RandomWorldGenerator {
 
     public static boolean checkOverlap(ArrayList<Room> rooms, Room comp) {
         for (Room r : rooms) {
-            if ((comp.p.getY() + comp.h > r.p.getY() - 1 && comp.p.getY() < r.p.getY() + r.h + 1)
-                    && (comp.p.getX() + comp.w > r.p.getX() - 1 && comp.p.getX() < r.p.getX() + r.w + 1)) {
+            if ((comp.p().getY() + comp.h() > r.p().getY() - 1 && comp.p().getY() < r.p().getY() + r.h() + 1)
+                    && (comp.p().getX() + comp.w() > r.p().getX() - 1
+                    && comp.p().getX() < r.p().getX() + r.w() + 1)) {
                 return true;
             }
         }
@@ -43,10 +48,10 @@ public class RandomWorldGenerator {
     }
 
     public static Position pickRandomEdgePoint(Room r, Random R) {
-        int x = r.p.getX();
-        int y = r.p.getY();
-        int width = r.w;
-        int height = r.h;
+        int x = r.p().getX();
+        int y = r.p().getY();
+        int width = r.w();
+        int height = r.h();
         int whichSide = R.nextInt(4);
         if (whichSide == 0) {
             return new Position(R.nextInt(width) + x, y);
@@ -60,10 +65,10 @@ public class RandomWorldGenerator {
     }
 
     public static Position pickRandomRoomPoint(Room r, Random R) {
-        int x = r.p.getX();
-        int y = r.p.getY();
-        int width = r.w;
-        int height = r.h;
+        int x = r.p().getX();
+        int y = r.p().getY();
+        int width = r.w();
+        int height = r.h();
         return new Position(R.nextInt(width) + x, R.nextInt(height) + y);
     }
 
@@ -72,16 +77,20 @@ public class RandomWorldGenerator {
         int yDiff = a.getY()  - b.getY();
         if (RandomUtils.bernoulli(R)) {
             Position corner = new Position(b.getX(), a.getY());
-            drawRoomAtLocation(new Room(Math.abs(xDiff) + 1, 1, xDiff < 0 ? a : corner), world, Tileset.FLOOR);
-            drawRoomAtLocation(new Room(1, Math.abs(yDiff), yDiff < 0 ? corner : b), world, Tileset.FLOOR);
+            drawRoomAtLocation(new Room(Math.abs(xDiff) + 1, 1,
+                    xDiff < 0 ? a : corner), world, Tileset.FLOOR);
+            drawRoomAtLocation(new Room(1, Math.abs(yDiff),
+                    yDiff < 0 ? corner : b), world, Tileset.FLOOR);
         } else {
             Position corner = new Position(a.getX(), b.getY());
-            drawRoomAtLocation(new Room(1, Math.abs(yDiff) + 1, yDiff < 0 ? a : corner), world, Tileset.FLOOR);
-            drawRoomAtLocation(new Room(Math.abs(xDiff), 1, xDiff < 0 ? corner : b), world, Tileset.FLOOR);
+            drawRoomAtLocation(new Room(1, Math.abs(yDiff) + 1,
+                    yDiff < 0 ? a : corner), world, Tileset.FLOOR);
+            drawRoomAtLocation(new Room(Math.abs(xDiff), 1,
+                    xDiff < 0 ? corner : b), world, Tileset.FLOOR);
         }
     }
 
-    public static void drawHallwaysNew(ArrayList<Room> rooms, TETile[][] world, Random R) { //Here there could be a lot of optimization but whatever
+    public static void drawHallwaysNew(ArrayList<Room> rooms, TETile[][] world, Random R) {
         WeightedQuickUnionUF hallConnections = new WeightedQuickUnionUF(rooms.size());
         HashMap<Room, Integer> room2index = new HashMap<>();
         for (int i = 0; i < rooms.size(); i++) {
@@ -89,7 +98,7 @@ public class RandomWorldGenerator {
         }
 
         for (Room r : rooms) {
-            Room.toComp = r;
+            Room.setToComp(r);
             ArrayList<Room> closestRooms = (ArrayList<Room>) rooms.clone(); //O(N)
             Collections.sort(closestRooms); //O(NlogN)
             closestRooms.remove(0); //O(N)
@@ -108,33 +117,33 @@ public class RandomWorldGenerator {
         for (int i = 0; i < rooms.size() - 1; i++) {
             Room one = rooms.get(i);
             Room two = rooms.get(i + 1);
-            int xDiff = two.p.getX() - one.p.getX();
-            int yDiff = two.p.getY() - one.p.getY();
+            int xDiff = two.p().getX() - one.p().getX();
+            int yDiff = two.p().getY() - one.p().getY();
             if (xDiff > 0) {
-                for (int j = one.p.getX(); j < xDiff + one.p.getX(); j++) {
-                    if (!world[j][one.p.getY()].description().equals("num")) {
-                        world[j][one.p.getY()] = Tileset.FLOOR;
+                for (int j = one.p().getX(); j < xDiff + one.p().getX(); j++) {
+                    if (!world[j][one.p().getY()].description().equals("num")) {
+                        world[j][one.p().getY()] = Tileset.FLOOR;
                     }
                 }
             }
             if (xDiff < 0) {
-                for (int j = one.p.getX(); j > xDiff + one.p.getX(); j--) {
-                    if (!world[j][one.p.getY()].description().equals("num")) {
-                        world[j][one.p.getY()] = Tileset.FLOOR;
+                for (int j = one.p().getX(); j > xDiff + one.p().getX(); j--) {
+                    if (!world[j][one.p().getY()].description().equals("num")) {
+                        world[j][one.p().getY()] = Tileset.FLOOR;
                     }
                 }
             }
             if (yDiff > 0) {
-                for (int j = one.p.getY(); j < yDiff + one.p.getY(); j++) {
-                    if (!world[one.p.getX() + xDiff][j].description().equals("num")) {
-                        world[one.p.getX() + xDiff][j] = Tileset.FLOOR;
+                for (int j = one.p().getY(); j < yDiff + one.p().getY(); j++) {
+                    if (!world[one.p().getX() + xDiff][j].description().equals("num")) {
+                        world[one.p().getX() + xDiff][j] = Tileset.FLOOR;
                     }
                 }
             }
             if (yDiff < 0) {
-                for (int j = one.p.getY(); j > yDiff + one.p.getY(); j--) {
-                    if (!world[one.p.getX() + xDiff][j].description().equals("num")) {
-                        world[one.p.getX() + xDiff][j] = Tileset.FLOOR;
+                for (int j = one.p().getY(); j > yDiff + one.p().getY(); j--) {
+                    if (!world[one.p().getX() + xDiff][j].description().equals("num")) {
+                        world[one.p().getX() + xDiff][j] = Tileset.FLOOR;
                     }
                 }
             }
@@ -142,10 +151,10 @@ public class RandomWorldGenerator {
     }
 
     public static void drawRoomAtLocation(Room r, TETile[][] world, TETile tile) {
-        int x = r.p.getX();
-        int y = r.p.getY();
-        int w = r.w;
-        int h = r.h;
+        int x = r.p().getX();
+        int y = r.p().getY();
+        int w = r.w();
+        int h = r.h();
         for (int i = x; i < w + x; i += 1) {
             for (int j = y; j < h + y; j += 1) {
                 //try {

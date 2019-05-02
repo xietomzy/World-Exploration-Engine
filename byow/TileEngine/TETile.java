@@ -196,4 +196,9 @@ public class TETile implements Serializable {
         //other = (TETile) other;
         return this.description().equals(((TETile) other).description());
     }
+
+    @Override
+    public int hashCode() {
+        return this.description.hashCode();
+    }
 }

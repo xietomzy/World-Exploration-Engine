@@ -44,7 +44,7 @@ public class MainMenu {
     }
 
     public void saveFiles() {
-        StdDraw.clear(new Color(0, 0,0));
+        StdDraw.clear(new Color(0, 0, 0));
         StdDraw.text(width / 2, height / 2 + offset, "Save File (1)");
         StdDraw.text(width / 2, height / 2, "Save File (2)");
         StdDraw.text(width / 2, height / 2 - offset, "Save File (3)");

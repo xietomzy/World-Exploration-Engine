@@ -9,9 +9,9 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Random;
 
-public class Police implements Serializable{
-    private static final TETile policeTile = Tileset.LINE_INTEGRAL;
-    private static final char[] directions = new char[] {'w', 'a', 's', 'd'};
+public class Police implements Serializable {
+    private static final TETile POLICE_TILE = Tileset.LINE_INTEGRAL;
+    private static final char[] DIRECTIONS = new char[] {'w', 'a', 's', 'd'};
     private Position pos;
     private char direction;
     private StringInputDevice policeMover;
@@ -28,11 +28,11 @@ public class Police implements Serializable{
         while (!world[pos.getX()][pos.getY()].equals(Tileset.FLOOR)) {
             pos = RandomWorldGenerator.pickRandomRoomPoint(policeRoom, R);
         }
-        world[pos.getX()][pos.getY()] = policeTile;
+        world[pos.getX()][pos.getY()] = POLICE_TILE;
 
-        direction = directions[R.nextInt(4)];
+        direction = DIRECTIONS[R.nextInt(4)];
 
-        policeMover = new StringInputDevice("" + direction); // zeroes are meant for buffering movement
+        policeMover = new StringInputDevice("" + direction);
     }
 
     public Position getPosition() {
@@ -55,15 +55,10 @@ public class Police implements Serializable{
                 //System.out.println(direction);
                 return;
             }
-            world[x - 1][y] = policeTile;
+            world[x - 1][y] = POLICE_TILE;
             //world[x - 1][y].draw(x - 1, y);
             world[x][y] = Tileset.FLOOR;
-            //world[x][y].draw(x, y);
-            /*if (checkIfInAvatarSight(world, pos.getX(), pos.getY())) {
-                world[x - 1][y].draw(x - 1, y);
-                world[x][y].draw(x, y);
-            }*/
-            pos = new Position (x - 1, y);
+            pos = new Position(x - 1, y);
 
         }
         // up
@@ -73,15 +68,10 @@ public class Police implements Serializable{
                 direction = differentDir[R.nextInt(3)];
                 return;
             }
-            world[x][y + 1] = policeTile;
+            world[x][y + 1] = POLICE_TILE;
             //world[x][y + 1].draw(x, y + 1);
             world[x][y] = Tileset.FLOOR;
-            //world[x][y].draw(x, y);
-            /*if (checkIfInAvatarSight(world, pos.getX(), pos.getY())) {
-                world[x][y + 1].draw(x, y + 1);
-                world[x][y].draw(x, y);
-            }*/
-            pos = new Position (x, y + 1);
+            pos = new Position(x, y + 1);
 
         }
         // right
@@ -91,15 +81,10 @@ public class Police implements Serializable{
                 direction = differentDir[R.nextInt(3)];
                 return;
             }
-            world[x + 1][y] = policeTile;
+            world[x + 1][y] = POLICE_TILE;
             //world[x + 1][y].draw(x + 1, y);
             world[x][y] = Tileset.FLOOR;
-            //world[x][y].draw(x, y);
-            /*if (checkIfInAvatarSight(world, pos.getX(), pos.getY())) {
-                world[x + 1][y].draw(x + 1, y);
-                world[x][y].draw(x, y);
-            }*/
-            pos = new Position (x + 1, y);
+            pos = new Position(x + 1, y);
 
         }
         // down
@@ -109,15 +94,10 @@ public class Police implements Serializable{
                 direction = differentDir[R.nextInt(3)];
                 return;
             }
-            world[x][y - 1] = policeTile;
+            world[x][y - 1] = POLICE_TILE;
             //world[x][y - 1].draw(x, y - 1);
             world[x][y] = Tileset.FLOOR;
-            //world[x][y].draw(x, y);
-            /*if (checkIfInAvatarSight(world, pos.getX(), pos.getY())) {
-                world[x][y - 1].draw(x, y - 1);
-                world[x][y].draw(x, y);
-            }*/
-            pos = new Position (x, y - 1);
+            pos = new Position(x, y - 1);
 
         }
         if (draw) {
@@ -145,8 +125,8 @@ public class Police implements Serializable{
                     if (checkAvatarCollision(world, i, j)) {
                         return true;
                     }
-                } catch (Exception e){
-
+                } catch (ArrayIndexOutOfBoundsException e) {
+                    //continue
                 }
             }
         }
