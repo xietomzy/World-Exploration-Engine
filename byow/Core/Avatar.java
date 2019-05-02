@@ -148,7 +148,7 @@ public class Avatar implements Serializable {
     // Only shows 9x9 tile square of the map
     public void drawSquareLighting(TETile[][] world, int x, int y) {
         StdDraw.setPenColor(new Color(0, 0, 0));
-        StdDraw.filledRectangle(width / 2, height / 2, width / 2, height / 2);
+        StdDraw.filledRectangle(width / 2, height / 2 - 1, width / 2, height / 2 - 1);
         for (int i = x - 4; i <= x + 4; i++) {
             for (int j = y - 4; j <= y + 4; j++) {
                 try {
