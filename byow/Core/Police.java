@@ -39,7 +39,7 @@ public class Police implements Serializable{
         return pos;
     }
 
-    public void move(TETile[][] world, Random R) {
+    public void move(TETile[][] world, Random R, boolean draw) {
         if (!policeMover.possibleNextInput()) {
             policeMover = new StringInputDevice("" + direction);
         }
@@ -120,16 +120,18 @@ public class Police implements Serializable{
             pos = new Position (x, y - 1);
 
         }
-        if (checkIfInAvatarSight(world, pos.getX(), pos.getY())) {
-            // draws police's new position
-            world[pos.getX()][pos.getY()].draw(pos.getX(), pos.getY());
-        }
-        if (checkIfInAvatarSight(world, x, y)) {
-            // erases police's previous position
-            world[x][y].draw(x, y);
-        }
+        if (draw) {
+            if (checkIfInAvatarSight(world, pos.getX(), pos.getY())) {
+                // draws police's new position
+                world[pos.getX()][pos.getY()].draw(pos.getX(), pos.getY());
+            }
+            if (checkIfInAvatarSight(world, x, y)) {
+                // erases police's previous position
+                world[x][y].draw(x, y);
+            }
 
-        StdDraw.show();
+            StdDraw.show();
+        }
     }
 
     public boolean checkAvatarCollision(TETile[][] world, int x, int y) {

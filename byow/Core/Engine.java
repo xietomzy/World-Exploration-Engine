@@ -12,6 +12,7 @@ import edu.princeton.cs.introcs.StdDraw;
 //import java.awt.Color;
 import java.awt.*;
 import java.io.*;
+import java.security.Key;
 import java.util.ArrayList;
 import java.util.Random;
 import java.util.Set;
@@ -74,17 +75,18 @@ public class Engine {
         StringInputDevice s = new StringInputDevice(input);
         runGame(s);
 
+        //ter.initialize(WIDTH, HEIGHT);
+        //ter.renderFrame(world);
         return world;
     }
 
-    private void startUp(InputSource inp) {
+    private void startUpKeyboard(InputSource inp) {
         Set<Character> menuOptions = Set.of('N', 'n', 'L', 'l', 'S', 's', 'B', 'b', 'Q', 'q', 'D', 'd');
 
         MainMenu m = new MainMenu(2, 1);
         m.initialize();
-        //m.drawMenu();
 
-        char first;// = inp.getNextKey();
+        char first;
 
         boolean runAgain;
         boolean invalidInput = false;
@@ -181,10 +183,117 @@ public class Engine {
         } while (runAgain);
     }
 
+    private void startUpString(InputSource inp) {
+        Set<Character> menuOptions = Set.of('N', 'n', 'L', 'l', 'S', 's', 'B', 'b', 'Q', 'q', 'D', 'd');
+
+        //MainMenu m = new MainMenu(2, 1);
+        //m.initialize();
+
+        char first;
+
+        boolean runAgain;
+        boolean invalidInput = false;
+        do {
+            runAgain = false;
+            //m.drawMenu();
+            if (invalidInput) {
+                //m.showInput("That file doesn't exist");
+            }
+            do {
+                first = inp.getNextKey();
+            } while (!menuOptions.contains(first));
+            //m.select(first);
+            try {
+                if (first == 'N' || first == 'n') {
+                    long seed = getSeed(inp);
+                    R = new Random(seed);
+
+                    //m.showInput(seed + "");
+                    //StdDraw.pause(1500);
+
+                    world = genWorld(R);
+                    avatar = new Avatar(Tileset.AVATAR, world, R, rooms, WIDTH, HEIGHT);
+                    police = new Police(world, R, rooms, avatar);
+                    //if (inp instanceof KeyboardInputSource) {
+                    //ter.initialize(WIDTH, HEIGHT);
+                    //ter.renderFrame(world);
+                    //}
+
+                    currentState = new CurrentState(world, R, seed, avatar, name, police);
+                } else if (first == 'L' || first == 'l') {
+                    currentState = loadLastState();
+                    world = currentState.world();
+                    R = currentState.random();
+                    avatar = currentState.avatar();
+                    police = currentState.police();
+                    name = currentState.name();
+
+                    //m.showInput("Loading save file " + currentSave + " with seed " + currentState.seed() + "...");
+                    //StdDraw.pause(1500);
+
+                    //if (inp instanceof KeyboardInputSource) {
+                    //ter.initialize(WIDTH, HEIGHT);
+                    //ter.renderFrame(world);
+                    //}
+                } else if (first == 'Q' || first == 'q') {
+                    System.exit(0);
+                } else if (first == 'S' || first == 's') {
+                    //m.saveFiles();
+                    char choice = inp.getNextKey();
+
+                    if (choice == 'B' || choice == 'b') {
+                        runAgain = true;
+                    } else {
+                        if (choice == '1') {
+                            currentSave = 1;
+                        } else if (choice == '2') {
+                            currentSave = 2;
+                        } else if (choice == '3') {
+                            currentSave = 3;
+                        }
+                        loadSave(currentSave);
+
+                        //m.showInput("Loading save file " + currentSave + " with seed " + currentState.seed() + "...");
+                        //StdDraw.pause(1500);
+
+                        //ter.initialize(WIDTH, HEIGHT);
+                        //ter.renderFrame(world);
+                    }
+                } else if (first == 'B' || first == 'b') {
+                    //name = m.chooseName();
+                    runAgain = true;
+                } else if (first == 'D' || first == 'd') {
+                    //m.deleteFile();
+                    char choice = inp.getNextKey();
+
+                    if (!(choice == 'B' || choice == 'b')) {
+                        int toRemove = 1;
+                        if (choice == '1') {
+                            toRemove = 1;
+                        } else if (choice == '2') {
+                            toRemove = 2;
+                        } else if (choice == '3') {
+                            toRemove = 3;
+                        }
+                        deleteSave(toRemove);
+                    }
+                    runAgain = true;
+                }
+            } catch (NullPointerException e) {
+                runAgain = true;
+                invalidInput = true;
+            }
+        } while (runAgain);
+    }
+
     private void runGame(InputSource inp) {
-        startUp(inp);
-        avatar.drawSquareLighting(world, avatar.getPosition().getX(), avatar.getPosition().getY());
         if (inp instanceof KeyboardInputSource) {
+            startUpKeyboard(inp);
+        } else if (inp instanceof StringInputDevice) {
+            startUpString(inp);
+        }
+        if (inp instanceof KeyboardInputSource) {
+            avatar.drawSquareLighting(world, avatar.getPosition().getX(), avatar.getPosition().getY());
             char next = 'a';
             boolean hasNextKey;
             //boolean nameShown;
@@ -199,7 +308,7 @@ public class Engine {
                 }
                 tileHover = HUD.returnTile(world, WIDTH, HEIGHT, tileHover);
                 if (policeCount == 10000000) {
-                    police.move(world, R);
+                    police.move(world, R, true);
                     policeCount = 0;
                 } else {
                     policeCount++;
@@ -212,8 +321,8 @@ public class Engine {
                 if (next == ':') {
                     break;
                 }
-                moveAvatar(next);
-                police.move(world, R);
+                moveAvatarString(next);
+                police.move(world, R, false);
             }
             //ter.renderFrame(world);
         }
@@ -273,6 +382,10 @@ public class Engine {
 
     private void moveAvatar(char next) {
         avatar.move(world, next);
+    }
+
+    private void moveAvatarString(char next) {
+        avatar.moveString(world, next);
     }
 
     private File firstOpenPath() {
