@@ -38,7 +38,8 @@ public class RandomWorldGenerator {
 
     public static boolean checkOverlap(ArrayList<Room> rooms, Room comp) {
         for (Room r : rooms) {
-            if ((comp.p().getY() + comp.h() > r.p().getY() - 1 && comp.p().getY() < r.p().getY() + r.h() + 1)
+            if ((comp.p().getY() + comp.h() > r.p().getY() - 1
+                    && comp.p().getY() < r.p().getY() + r.h() + 1)
                     && (comp.p().getX() + comp.w() > r.p().getX() - 1
                     && comp.p().getX() < r.p().getX() + r.w() + 1)) {
                 return true;
