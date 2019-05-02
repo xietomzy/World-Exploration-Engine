@@ -37,8 +37,9 @@ public class MainMenu {
         StdDraw.text(width / 2, height / 2, "Load Game (L)");
         StdDraw.text(width / 2, height / 2 + offset, "New Game (N)");
         StdDraw.text(width / 2, height / 2 - offset, "Save Files (S)");
-        StdDraw.text(width / 2, height / 2 - 2 * offset, "Choose Name (B)");
-        StdDraw.text(width / 2, height / 2 - 3 * offset, "Quit (Q)");
+        StdDraw.text(width / 2, height / 2 - 2 * offset, "Delete Save (D)");
+        StdDraw.text(width / 2, height / 2 - 3 * offset, "Choose Name (B)");
+        StdDraw.text(width / 2, height / 2 - 4 * offset, "Quit (Q)");
         StdDraw.show();
     }
 
@@ -48,6 +49,12 @@ public class MainMenu {
         StdDraw.text(width / 2, height / 2, "Save File (2)");
         StdDraw.text(width / 2, height / 2 - offset, "Save File (3)");
         StdDraw.text(width / 2, height / 2 - 2 * offset, "Back (B)");
+        StdDraw.show();
+    }
+
+    public void deleteFile() {
+        saveFiles();
+        StdDraw.text(width / 2, height / 2 + 2 * offset, "Choose which save to delete");
         StdDraw.show();
     }
 
@@ -94,7 +101,7 @@ public class MainMenu {
         while (count != cap) {
             if (StdDraw.hasNextKeyTyped()) {
                 char next = StdDraw.nextKeyTyped();
-                if (next == ' ') {
+                if (next == '#') {
                     //initialize();
                     return input;
                 }
